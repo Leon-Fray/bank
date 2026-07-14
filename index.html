@@ -538,9 +538,8 @@ function openInfluencerForm(inf) {
     <div class="field"><label>Name / Persona</label><input id="if-name" value="${esc(d.influencer_name)}" placeholder="e.g. Mara Finch"></div>
     <div class="field"><label>Niche / Category</label><input id="if-niche" value="${esc(d.niche)}" placeholder="e.g. budget home cooking"></div>
     <div class="field"><label>Target Audience</label><input id="if-audience" value="${esc(d.audience)}" placeholder="Who are we talking to?"></div>
-    <div class="field"><label>Voice &amp; Tone</label><textarea id="if-voice" rows="3" placeholder="How does this persona sound?">${esc(d.voice)}</textarea></div>
-    <div class="field"><label>Core Values</label><textarea id="if-core_values" rows="2">${esc(d.core_values)}</textarea></div>
-    <div class="field"><label>Content Pillars</label><textarea id="if-pillars" rows="3" placeholder="One pillar per line">${esc(d.pillars)}</textarea></div>
+    <div class="field"><label>Tags</label><textarea id="if-tags" rows="2" placeholder="One tag per line">${esc(d.tags)}</textarea></div>
+    <div class="field"><label>Games</label><textarea id="if-games" rows="3" placeholder="One game per line">${esc(d.games)}</textarea></div>
     <div class="field"><label>Short Bio</label><textarea id="if-bio" rows="3">${esc(d.bio)}</textarea></div>
     <div class="modal-actions">
       <button class="btn ghost" id="ifCancel">Cancel</button>
@@ -553,9 +552,8 @@ function openInfluencerForm(inf) {
       influencer_name: document.getElementById('if-name').value,
       niche:           document.getElementById('if-niche').value,
       audience:        document.getElementById('if-audience').value,
-      voice:           document.getElementById('if-voice').value,
-      core_values:     document.getElementById('if-core_values').value,
-      pillars:         document.getElementById('if-pillars').value,
+      tags:            document.getElementById('if-tags').value,
+      games:           document.getElementById('if-games').value,
       bio:             document.getElementById('if-bio').value,
       updated_at:      new Date().toISOString(),
     };
@@ -592,8 +590,13 @@ function openQuickLook(inf) {
   const stageCounts = IDEA_STAGES.map(s => ({ stage: s, count: infIdeas.filter(i => (i.stage||'Idea') === s).length }));
   const maxCount    = Math.max(1, ...stageCounts.map(s => s.count));
 
-  // Content pillars as pills
-  const pillarsHtml = (inf.pillars||'').split('\n').filter(p=>p.trim())
+  // Tags as pills
+  const tagsHtml = (inf.tags||'').split('\n').filter(p=>p.trim())
+    .map(p => `<span class="ql-pillar" style="background:${c.dim};color:${c.bg};">${esc(p.trim())}</span>`)
+    .join('');
+
+  // Games as pills
+  const gamesHtml = (inf.games||'').split('\n').filter(p=>p.trim())
     .map(p => `<span class="ql-pillar" style="background:${c.dim};color:${c.bg};">${esc(p.trim())}</span>`)
     .join('');
 
@@ -618,7 +621,7 @@ function openQuickLook(inf) {
       <span class="ql-stage-count">${s.count}</span>
     </div>`).join('');
 
-  const noProfile = !inf.voice && !inf.core_values && !inf.pillars && !inf.bio;
+  const noProfile = !inf.tags && !inf.games && !inf.bio;
 
   box.innerHTML = `
     <div class="ql-header">
@@ -631,9 +634,8 @@ function openQuickLook(inf) {
     </div>
     <div class="ql-body">
       <div class="ql-profile">
-        ${inf.voice      ? `<div class="ql-profile-row"><div class="ql-profile-label">Voice &amp; Tone</div><div class="ql-profile-val">${esc(inf.voice)}</div></div>` : ''}
-        ${inf.core_values? `<div class="ql-profile-row"><div class="ql-profile-label">Core Values</div><div class="ql-profile-val">${esc(inf.core_values)}</div></div>` : ''}
-        ${pillarsHtml    ? `<div class="ql-profile-row"><div class="ql-profile-label">Content Pillars</div><div class="ql-pillars">${pillarsHtml}</div></div>` : ''}
+        ${tagsHtml       ? `<div class="ql-profile-row"><div class="ql-profile-label">Tags</div><div class="ql-pillars">${tagsHtml}</div></div>` : ''}
+        ${gamesHtml       ? `<div class="ql-profile-row"><div class="ql-profile-label">Games</div><div class="ql-pillars">${gamesHtml}</div></div>` : ''}
         ${inf.bio        ? `<div class="ql-profile-row"><div class="ql-profile-label">Bio</div><div class="ql-profile-val">${esc(inf.bio)}</div></div>` : ''}
         ${noProfile      ? `<div class="ql-empty-note">No profile details yet.<br>Edit this creator to fill in their brand bible.</div>` : ''}
       </div>
