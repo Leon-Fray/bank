@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Bank*</title>
-<meta name="description" content="bank is your creator content operations hub — manage influencer brand bibles, content calendars, idea banks, and swipe files in one place.">
+<title>Green Room — Content Ops</title>
+<meta name="description" content="Green Room is your creator content operations hub — manage influencer brand bibles, content calendars, idea banks, and swipe files in one place.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -176,6 +176,11 @@
   .pill.platform{background:var(--teal-dim);color:var(--teal);}
   .pill.status{background:var(--coral-dim);color:var(--coral);}
   .card-notes{font-size:13px;color:var(--ink-soft);line-height:1.5;}
+  .swipe-notes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;}
+  .swipe-notes li{font-size:13px;line-height:1.5;padding-left:20px;position:relative;color:var(--ink);}
+  .swipe-notes li.pos::before{content:"+";position:absolute;left:2px;top:0;color:var(--teal);font-weight:700;}
+  .swipe-notes li.neg::before{content:"–";position:absolute;left:2px;top:0;color:var(--coral);font-weight:700;}
+  .swipe-notes li.neu::before{content:"•";position:absolute;left:4px;top:0;color:var(--ink-soft);}
   .card-actions{display:flex;gap:6px;margin-left:auto;}
   .empty{border:1px dashed var(--line);border-radius:10px;padding:34px;text-align:center;color:var(--ink-soft);font-size:14px;}
   .link{color:var(--coral);text-decoration:none;font-weight:600;font-size:13px;}
@@ -242,7 +247,7 @@
 
 <div class="app">
   <div class="sidebar">
-    <div class="brandmark">Bank*</div>
+    <div class="brandmark">Green Room<small>CONTENT OPS</small></div>
 
     <!-- Active influencer context indicator -->
     <div class="sidebar-ctx" id="sidebarCtx">
@@ -693,7 +698,7 @@ function attachFilterPills() {
 
 // ── Generic list view ──────────────────────────────────
 function calendarFields()  { return [{key:'date',label:'Date',type:'date'},{key:'platform',label:'Platform',type:'select',options:PLATFORMS},{key:'title',label:'Title / Concept',type:'text'},{key:'status',label:'Status',type:'select',options:CAL_STATUSES},{key:'notes',label:'Notes',type:'textarea'}]; }
-function swipeFields()     { return [{key:'title',label:'Creator / Video Name',type:'text'},{key:'platform',label:'Platform',type:'select',options:PLATFORMS},{key:'link',label:'Link',type:'text'},{key:'notes',label:'Why it works',type:'textarea'},{key:'tag',label:'Tag / Category',type:'text'}]; }
+function swipeFields()     { return [{key:'title',label:'Creator / Video Name',type:'text'},{key:'platform',label:'Platform',type:'select',options:PLATFORMS},{key:'link',label:'Link',type:'text'},{key:'notes',label:'Notes',type:'textarea',placeholder:'One point per line. Start a line with + for a positive, - for a negative.'},{key:'tag',label:'Tag / Category',type:'text'}]; }
 function campaignFields()  { return [{key:'title',label:'Campaign Name',type:'text'},{key:'status',label:'Status',type:'select',options:CAMPAIGN_STATUSES},{key:'timeframe',label:'Timeframe',type:'text'},{key:'channels',label:'Channels',type:'text'},{key:'notes',label:'Goal / Strategy Notes',type:'textarea'}]; }
 
 function renderList(main, cfg) {
@@ -709,6 +714,17 @@ function renderList(main, cfg) {
   if (items.length === 0) { wrap.innerHTML = `<div class="empty">${cfg.empty}</div>`; }
   else { items.forEach(item => wrap.appendChild(buildCard(item, cfg))); }
   document.getElementById('addBtn').onclick = () => openModal(cfg, null);
+}
+
+function formatSwipeNotes(notes) {
+  const lines = (notes||'').split('\n').map(l => l.trim()).filter(Boolean);
+  if (lines.length === 0) return '';
+  const items = lines.map(line => {
+    if (line.startsWith('+')) return {cls:'pos', text: line.slice(1).trim()};
+    if (line.startsWith('-') || line.startsWith('–')) return {cls:'neg', text: line.slice(1).trim()};
+    return {cls:'neu', text: line};
+  });
+  return `<ul class="swipe-notes">${items.map(i => `<li class="${i.cls}">${esc(i.text)}</li>`).join('')}</ul>`;
 }
 
 function buildCard(item, cfg) {
@@ -732,7 +748,7 @@ function buildCard(item, cfg) {
       </div>
     </div>
     <div class="card-meta">${dateBit}${platformPill}${statusPill}${infBadge}${item.tag?`<span class="pill platform">${esc(item.tag)}</span>`:''}</div>
-    ${item.notes    ? `<div class="card-notes">${esc(item.notes)}</div>` : ''}
+    ${item.notes    ? (cfg.key === 'swipe' ? formatSwipeNotes(item.notes) : `<div class="card-notes">${esc(item.notes)}</div>`) : ''}
     ${item.channels ? `<div class="card-notes"><strong>Channels:</strong> ${esc(item.channels)}</div>` : ''}
     ${item.timeframe? `<div class="card-notes"><strong>Timeframe:</strong> ${esc(item.timeframe)}</div>` : ''}
     ${linkBit}`;
@@ -758,7 +774,7 @@ function openModal(cfg, item) {
 
   const fieldsHtml = cfg.fields.map(f => {
     const val = esc(data[f.key]||'');
-    if (f.type === 'textarea') return `<div class="field"><label>${f.label}</label><textarea rows="3" id="m-${f.key}">${val}</textarea></div>`;
+    if (f.type === 'textarea') return `<div class="field"><label>${f.label}</label><textarea rows="3" id="m-${f.key}" placeholder="${esc(f.placeholder||'')}">${val}</textarea></div>`;
     if (f.type === 'select') {
       const opts = f.options.map(o => `<option value="${o}" ${data[f.key]===o?'selected':''}>${o}</option>`).join('');
       return `<div class="field"><label>${f.label}</label><select id="m-${f.key}">${opts}</select></div>`;
