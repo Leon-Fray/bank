@@ -1,11 +1,13 @@
--- Green Room schema
--- Run this once in your Supabase project: SQL Editor -> New query -> paste -> Run
+-- Green Room schema (v2 — multi-influencer)
+-- Use this for a FRESH install.
+-- If you already have tables, run schema_migration.sql instead.
+-- SQL Editor → New query → paste → Run
 
 create extension if not exists pgcrypto;
 
--- Brand Bible: a single row (id is always 1)
+-- Influencers / Brand Bibles (one row per creator)
 create table if not exists brand_bible (
-  id integer primary key default 1,
+  id uuid primary key default gen_random_uuid(),
   influencer_name text,
   niche text,
   audience text,
@@ -19,6 +21,7 @@ create table if not exists brand_bible (
 -- Content Calendar
 create table if not exists calendar_items (
   id uuid primary key default gen_random_uuid(),
+  influencer_id uuid references brand_bible(id) on delete set null,
   take_number int,
   date date,
   platform text,
@@ -31,6 +34,7 @@ create table if not exists calendar_items (
 -- Idea Bank
 create table if not exists idea_bank (
   id uuid primary key default gen_random_uuid(),
+  influencer_id uuid references brand_bible(id) on delete set null,
   take_number int,
   title text,
   platform text,
@@ -42,6 +46,7 @@ create table if not exists idea_bank (
 -- Swipe File
 create table if not exists swipe_file (
   id uuid primary key default gen_random_uuid(),
+  influencer_id uuid references brand_bible(id) on delete set null,
   take_number int,
   title text,
   platform text,
@@ -54,6 +59,7 @@ create table if not exists swipe_file (
 -- Campaigns & Strategy
 create table if not exists campaigns (
   id uuid primary key default gen_random_uuid(),
+  influencer_id uuid references brand_bible(id) on delete set null,
   take_number int,
   title text,
   status text,
@@ -65,8 +71,7 @@ create table if not exists campaigns (
 
 -- Row Level Security
 -- These policies allow full read/write to anyone holding the "anon" public key.
--- That's fine for a small trusted team sharing one link, but treat the link
--- and the anon key as things you don't post publicly. See SETUP.md for notes
+-- That's fine for a small trusted team sharing one link. See SETUP.md for notes
 -- on tightening this later with Supabase Auth.
 alter table brand_bible enable row level security;
 alter table calendar_items enable row level security;
