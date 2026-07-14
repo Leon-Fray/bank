@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Green Room — Content Ops</title>
-<meta name="description" content="Green Room is your creator content operations hub — manage influencer brand bibles, content calendars, idea banks, and swipe files in one place.">
+<title>Bank*</title>
+<meta name="description" content="bank is your creator content operations hub — manage influencer brand bibles, content calendars, idea banks, and swipe files in one place.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -166,7 +166,6 @@
   .inf-pill.active{border-color:currentColor;}
 
   /* ── Generic list styles ── */
-  .take-tag{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--amber);background:var(--amber-dim);padding:3px 7px;border-radius:4px;display:inline-block;transform:rotate(-1.2deg);}
   .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
   .card-list{display:flex;flex-direction:column;gap:10px;}
   .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px;}
@@ -243,7 +242,7 @@
 
 <div class="app">
   <div class="sidebar">
-    <div class="brandmark">Green Room<small>CONTENT OPS</small></div>
+    <div class="brandmark">Bank*</div>
 
     <!-- Active influencer context indicator -->
     <div class="sidebar-ctx" id="sidebarCtx">
@@ -299,7 +298,7 @@ const supabase   = configured ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : 
 // ── Constants ──────────────────────────────────────────
 const PLATFORMS        = ["TikTok","Instagram Reels","YouTube Shorts","YouTube Long-form","X / Twitter","Other"];
 const CAL_STATUSES     = ["Idea","Scripted","Filming","Editing","Scheduled","Posted"];
-const IDEA_STAGES      = ["Idea","Scripted","Filming","Posted"];
+const IDEA_STAGES      = ["Idea","Filmed","Posted"];
 const CAMPAIGN_STATUSES= ["Planning","Active","Complete"];
 
 // Color palette for influencer avatars (derived from name hash)
@@ -725,8 +724,7 @@ function buildCard(item, cfg) {
   div.innerHTML = `
     <div class="card-top">
       <div>
-        <span class="take-tag">TAKE ${item.take_number}</span>
-        <div class="card-title" style="margin-top:6px;">${esc(item.title)||'Untitled'}</div>
+        <div class="card-title">${esc(item.title)||'Untitled'}</div>
       </div>
       <div class="card-actions">
         <button class="icon-btn" data-act="edit">Edit</button>
@@ -826,9 +824,8 @@ function renderKanban(main) {
       const card = document.createElement('div');
       card.className = 'kcard';
       card.innerHTML = `
-        <span class="take-tag">TAKE ${item.take_number}</span>
-        ${inf ? `<div style="margin-top:5px;"><span class="pill" style="background:${c.dim};color:${c.bg};font-size:10px;">${initial(inf.influencer_name)} ${esc(inf.influencer_name)}</span></div>` : ''}
-        <div class="card-title" style="margin-top:6px;">${esc(item.title)||'Untitled'}</div>
+        ${inf ? `<div><span class="pill" style="background:${c.dim};color:${c.bg};font-size:10px;">${initial(inf.influencer_name)} ${esc(inf.influencer_name)}</span></div>` : ''}
+        <div class="card-title" style="margin-top:${inf ? '6px' : '0'};">${esc(item.title)||'Untitled'}</div>
         <div class="card-meta" style="margin-top:4px;">${item.platform?`<span class="pill platform">${esc(item.platform)}</span>`:''}</div>
         ${item.notes ? `<div class="card-notes">${esc(item.notes)}</div>` : ''}
         <div class="card-actions" style="margin-top:8px;">
