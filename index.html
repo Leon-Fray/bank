@@ -825,7 +825,7 @@ function ideaModalFields() { return [{key:'title',label:'Video Idea',type:'text'
 function renderKanban(main) {
   const items = filteredItems('ideas');
   main.innerHTML = `
-    <div class="page-head"><h1>Idea Bank</h1><p>Every video idea, moving left to right as it develops.</p></div>
+    <div class="page-head"><h1>Idea Bank</h1><p></p></div>
     ${influencerFilterHtml()}
     <div class="kanban" id="kanbanWrap"></div>`;
   attachFilterPills();
