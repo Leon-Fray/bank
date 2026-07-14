@@ -430,7 +430,7 @@ function render(tab) {
   if (tab === 'brand')     renderDashboard(main);
   else if (tab === 'calendar') renderList(main,{key:'calendar',table:'calendar_items',title:'Content Calendar',sub:'Everything scheduled to go out, in order.',fields:calendarFields(),empty:'No content scheduled yet — add your first post.'});
   else if (tab === 'ideas')    renderKanban(main);
-  else if (tab === 'swipe')    renderList(main,{key:'swipe',table:'swipe_file',title:'Swipe File',sub:'Creators and videos worth studying or borrowing beats from.',fields:swipeFields(),empty:'No references saved yet — add a creator or video to study.'});
+  else if (tab === 'swipe')    renderList(main,{key:'swipe',table:'swipe_file',title:'Swipe File',sub:'Creators and their pros and cons',fields:swipeFields(),empty:'No references saved yet — add a creator or video to study.'});
   else if (tab === 'campaigns') renderList(main,{key:'campaigns',table:'campaigns',title:'Campaigns & Strategy',sub:'Bigger pushes — launches, collabs, seasonal moments.',fields:campaignFields(),empty:'No campaigns yet — sketch out your first one.'});
 }
 
