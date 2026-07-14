@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Green Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF8F3;
+    --ink:#201A2B;
+    --ink-soft:#635C71;
+    --coral:#FF4D6D;
+    --coral-dim:#FFE1E6;
+    --teal:#1FA9A1;
+    --teal-dim:#DCF3F1;
+    --amber:#F2A93B;
+    --amber-dim:#FBEACB;
+    --line:#E4DED2;
+    --card:#FFFFFF;
+    --shadow: 0 1px 2px rgba(32,26,43,0.06), 0 4px 14px rgba(32,26,43,0.05);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;}
+  .app{display:flex;min-height:600px;}
+
+  .sidebar{
+    width:220px;flex:none;background:var(--ink);color:var(--paper);
+    padding:28px 0 20px;display:flex;flex-direction:column;position:relative;
+  }
+  .brandmark{
+    font-family:'Fraunces',serif;font-style:italic;font-weight:500;font-size:22px;
+    padding:0 22px 22px;letter-spacing:0.2px;border-bottom:1px solid rgba(250,248,243,0.14);margin-bottom:10px;
+  }
+  .brandmark small{display:block;font-family:'JetBrains Mono',monospace;font-style:normal;font-size:10px;letter-spacing:1.5px;color:var(--coral);margin-top:4px;}
+  .tabs{display:flex;flex-direction:column;margin-top:6px;}
+  .tab{display:flex;align-items:center;gap:10px;padding:12px 22px;cursor:pointer;font-size:14px;color:rgba(250,248,243,0.65);border-left:3px solid transparent;transition:all .15s ease;position:relative;}
+  .tab .num{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(250,248,243,0.35);}
+  .tab:hover{color:var(--paper);background:rgba(250,248,243,0.04);}
+  .tab.active{color:var(--paper);border-left-color:var(--coral);background:rgba(255,77,109,0.09);}
+  .tab.active .num{color:var(--coral);}
+  .sidebar-foot{margin-top:auto;padding:16px 22px 0;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(250,248,243,0.3);border-top:1px solid rgba(250,248,243,0.1);padding-top:14px;}
+  .conn-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--coral);margin-right:6px;}
+  .conn-dot.ok{background:var(--teal);}
+
+  .main{flex:1;padding:34px 40px 60px;max-width:980px;}
+  .page-head{margin-bottom:26px;}
+  .page-head h1{font-family:'Fraunces',serif;font-weight:600;font-size:30px;margin:0 0 6px;}
+  .page-head p{color:var(--ink-soft);font-size:14px;margin:0;max-width:520px;}
+
+  .btn{font-family:'Inter',sans-serif;font-weight:600;font-size:13px;border:none;border-radius:7px;padding:9px 16px;cursor:pointer;background:var(--ink);color:var(--paper);transition:transform .1s ease, opacity .15s ease;}
+  .btn:hover{opacity:0.85;}
+  .btn:active{transform:scale(0.98);}
+  .btn.primary{background:var(--coral);}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);}
+
+  .take-tag{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:0.5px;color:var(--amber);background:var(--amber-dim);padding:3px 7px;border-radius:4px;display:inline-block;transform:rotate(-1.2deg);}
+
+  .brand-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+  .field.full{grid-column:1 / -1;}
+  .field label{font-size:12px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.4px;}
+  .field input, .field textarea, .field select{font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--card);resize:vertical;}
+  .field input:focus, .field textarea:focus, .field select:focus{outline:2px solid var(--coral);outline-offset:1px;}
+  .save-row{display:flex;align-items:center;gap:12px;margin-top:6px;}
+  .save-note{font-size:12px;color:var(--teal);font-family:'JetBrains Mono',monospace;opacity:0;transition:opacity .3s;}
+  .save-note.show{opacity:1;}
+
+  .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+  .card-list{display:flex;flex-direction:column;gap:10px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px;}
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+  .card-title{font-weight:600;font-size:15px;}
+  .card-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .pill{font-size:11px;font-weight:600;padding:3px 9px;border-radius:100px;font-family:'JetBrains Mono',monospace;letter-spacing:0.3px;}
+  .pill.platform{background:var(--teal-dim);color:var(--teal);}
+  .pill.status{background:var(--coral-dim);color:var(--coral);}
+  .card-notes{font-size:13px;color:var(--ink-soft);line-height:1.5;}
+  .card-actions{display:flex;gap:6px;margin-left:auto;}
+  .icon-btn{border:none;background:transparent;cursor:pointer;color:var(--ink-soft);font-size:13px;padding:4px 6px;border-radius:5px;}
+  .icon-btn:hover{background:var(--paper);color:var(--ink);}
+  .empty{border:1px dashed var(--line);border-radius:10px;padding:34px;text-align:center;color:var(--ink-soft);font-size:14px;}
+  .link{color:var(--coral);text-decoration:none;font-weight:600;font-size:13px;}
+  .link:hover{text-decoration:underline;}
+
+  .kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:start;}
+  .kcol{background:rgba(228,222,210,0.35);border-radius:10px;padding:12px;min-height:100px;}
+  .kcol h3{font-size:12px;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink-soft);margin:0 0 10px;display:flex;justify-content:space-between;align-items:center;}
+  .kcol h3 span{font-family:'JetBrains Mono',monospace;font-weight:400;}
+  .kcard{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 11px;margin-bottom:8px;box-shadow:var(--shadow);}
+  .kcard .card-title{font-size:13.5px;}
+  .kcard .card-notes{font-size:12px;}
+  .kadd{width:100%;background:none;border:1px dashed var(--line);border-radius:8px;padding:8px;color:var(--ink-soft);font-size:12px;cursor:pointer;}
+  .kadd:hover{border-color:var(--coral);color:var(--coral);}
+
+  .overlay{position:fixed;inset:0;background:rgba(32,26,43,0.45);display:none;align-items:center;justify-content:center;z-index:50;}
+  .overlay.show{display:flex;}
+  .modal{background:var(--paper);border-radius:14px;padding:26px 28px;width:420px;max-width:90vw;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.25);}
+  .modal h2{font-family:'Fraunces',serif;font-size:20px;margin:0 0 16px;}
+  .modal-actions{display:flex;justify-content:space-between;margin-top:18px;}
+
+  .setup-banner{background:#fff;border:1px solid var(--coral);border-radius:10px;padding:16px 18px;margin-bottom:22px;font-size:13px;line-height:1.6;color:var(--ink);}
+  .setup-banner code{background:var(--paper);padding:1px 5px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:12px;}
+
+  ::-webkit-scrollbar{width:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px;}
+
+  @media (max-width:760px){
+    .app{flex-direction:column;}
+    .sidebar{width:100%;flex-direction:row;overflow-x:auto;padding:12px;}
+    .brandmark{display:none;}
+    .tabs{flex-direction:row;}
+    .tab{border-left:none;border-bottom:3px solid transparent;white-space:nowrap;}
+    .tab.active{border-left:none;border-bottom-color:var(--coral);}
+    .sidebar-foot{display:none;}
+    .main{padding:22px 18px 60px;}
+    .brand-grid, .kanban{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="brandmark">Green Room<small>CONTENT OPS</small></div>
+    <div class="tabs" id="tabs">
+      <div class="tab active" data-tab="brand"><span class="num">01</span> Brand Bible</div>
+      <div class="tab" data-tab="calendar"><span class="num">02</span> Calendar</div>
+      <div class="tab" data-tab="ideas"><span class="num">03</span> Idea Bank</div>
+      <div class="tab" data-tab="swipe"><span class="num">04</span> Swipe File</div>
+      <div class="tab" data-tab="campaigns"><span class="num">05</span> Campaigns</div>
+    </div>
+    <div class="sidebar-foot"><span class="conn-dot" id="connDot"></span><span id="connLabel">Connecting…</span></div>
+  </div>
+
+  <div class="main" id="main">
+    <div class="page-head"><h1>Loading…</h1></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modalBox"></div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+// ======================================================
+// 1. PASTE YOUR SUPABASE PROJECT DETAILS HERE
+//    Settings -> API in your Supabase dashboard
+// ======================================================
+const SUPABASE_URL = 'https://dyxybkxqvgfemvhxrbsn.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5eHlia3hxdmdmZW12aHhyYnNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5OTE1NTcsImV4cCI6MjA5OTU2NzU1N30.1Clt7UoQVCwzrNR_DyNzD9A31EIZci-hP4gvUupF2Mw';
+// ======================================================
+
+const configured = !SUPABASE_URL.includes('YOUR_') && !SUPABASE_ANON_KEY.includes('YOUR_');
+const supabase = configured ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+const state = { brand: null, calendar: [], ideas: [], swipe: [], campaigns: [] };
+const PLATFORMS = ["TikTok","Instagram Reels","YouTube Shorts","YouTube Long-form","X / Twitter","Other"];
+const CAL_STATUSES = ["Idea","Scripted","Filming","Editing","Scheduled","Posted"];
+const IDEA_STAGES = ["Idea","Scripted","Filming","Posted"];
+const CAMPAIGN_STATUSES = ["Planning","Active","Complete"];
+let takeCounter = 1;
+function nextTake(){ return takeCounter++; }
+function esc(s){ return (s||'').toString().replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// ---------------- Supabase helpers ----------------
+async function sbSelect(table){
+  const { data, error } = await supabase.from(table).select('*').order('created_at', { ascending:false });
+  if(error){ console.error(table, error); return []; }
+  return data;
+}
+async function sbInsert(table, obj){
+  const { data, error } = await supabase.from(table).insert(obj).select().single();
+  if(error){ console.error(table, error); alert('Save failed: '+error.message); return null; }
+  return data;
+}
+async function sbUpdate(table, id, obj){
+  const { data, error } = await supabase.from(table).update(obj).eq('id', id).select().single();
+  if(error){ console.error(table, error); alert('Save failed: '+error.message); return null; }
+  return data;
+}
+async function sbDelete(table, id){
+  const { error } = await supabase.from(table).delete().eq('id', id);
+  if(error){ console.error(table, error); alert('Delete failed: '+error.message); return false; }
+  return true;
+}
+async function sbGetBrand(){
+  const { data, error } = await supabase.from('brand_bible').select('*').eq('id',1).maybeSingle();
+  if(error){ console.error(error); return null; }
+  return data;
+}
+async function sbSaveBrand(obj){
+  const payload = { id:1, ...obj, updated_at: new Date().toISOString() };
+  const { data, error } = await supabase.from('brand_bible').upsert(payload).select().single();
+  if(error){ console.error(error); alert('Save failed: '+error.message); return null; }
+  return data;
+}
+
+async function loadAll(){
+  const [brand, calendar, ideas, swipe, campaigns] = await Promise.all([
+    sbGetBrand(),
+    sbSelect('calendar_items'),
+    sbSelect('idea_bank'),
+    sbSelect('swipe_file'),
+    sbSelect('campaigns')
+  ]);
+  state.brand = brand || {influencer_name:'',niche:'',audience:'',voice:'',core_values:'',pillars:'',bio:''};
+  state.calendar = calendar;
+  state.ideas = ideas;
+  state.swipe = swipe;
+  state.campaigns = campaigns;
+  const maxTake = Math.max(0, ...[...calendar,...ideas,...swipe,...campaigns].map(i=>i.take_number||0));
+  takeCounter = maxTake+1;
+}
+
+// ---------------- tabs ----------------
+document.getElementById('tabs').addEventListener('click', (e)=>{
+  const tab = e.target.closest('.tab');
+  if(!tab) return;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  render(tab.dataset.tab);
+});
+
+function render(tab){
+  const main = document.getElementById('main');
+  if(!configured){ return renderSetupNeeded(main); }
+  if(tab==='brand') return renderBrand(main);
+  if(tab==='calendar') return renderList(main, { key:'calendar', table:'calendar_items', title:'Content Calendar', sub:'Everything scheduled to go out, in order.', fields: calendarFields(), empty:'No content scheduled yet. Add your first post.' });
+  if(tab==='ideas') return renderKanban(main);
+  if(tab==='swipe') return renderList(main, { key:'swipe', table:'swipe_file', title:'Swipe File', sub:'Creators and videos worth studying or borrowing beats from.', fields: swipeFields(), empty:'No references saved yet. Add a creator or video to study.' });
+  if(tab==='campaigns') return renderList(main, { key:'campaigns', table:'campaigns', title:'Campaigns & Strategy', sub:'Bigger pushes — launches, collabs, seasonal moments.', fields: campaignFields(), empty:'No campaigns yet. Sketch out your first one.' });
+}
+
+function renderSetupNeeded(main){
+  main.innerHTML = `
+    <div class="page-head"><h1>Almost there</h1><p>This dashboard needs to be pointed at your Supabase project before it can store anything.</p></div>
+    <div class="setup-banner">
+      Open this file and edit the config block near the top of the script:<br><br>
+      <code>const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL';</code><br>
+      <code>const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';</code><br><br>
+      You'll find both values in your Supabase project under <strong>Settings → API</strong>. Full steps are in SETUP.md.
+    </div>
+  `;
+}
+
+// ---------------- Brand Bible ----------------
+function renderBrand(main){
+  const b = state.brand;
+  main.innerHTML = `
+    <div class="page-head"><h1>Brand Bible</h1><p>The reference sheet for who this creator is. Everyone planning content should read this first.</p></div>
+    <div class="brand-grid">
+      <div class="field"><label>Influencer / Persona Name</label><input id="f-influencer_name" value="${esc(b.influencer_name)}" placeholder="e.g. Mara Finch"></div>
+      <div class="field"><label>Niche / Category</label><input id="f-niche" value="${esc(b.niche)}" placeholder="e.g. budget home cooking"></div>
+      <div class="field full"><label>Target Audience</label><input id="f-audience" value="${esc(b.audience)}" placeholder="Who are we talking to?"></div>
+      <div class="field full"><label>Voice & Tone</label><textarea id="f-voice" rows="3" placeholder="How does this persona sound?">${esc(b.voice)}</textarea></div>
+      <div class="field full"><label>Core Values</label><textarea id="f-core_values" rows="2">${esc(b.core_values)}</textarea></div>
+      <div class="field full"><label>Content Pillars</label><textarea id="f-pillars" rows="3" placeholder="One per line">${esc(b.pillars)}</textarea></div>
+      <div class="field full"><label>Short Bio</label><textarea id="f-bio" rows="3">${esc(b.bio)}</textarea></div>
+    </div>
+    <div class="save-row">
+      <button class="btn primary" id="brandSave">Save changes</button>
+      <span class="save-note" id="brandSaveNote">Saved</span>
+    </div>
+  `;
+  document.getElementById('brandSave').onclick = async ()=>{
+    const obj = {};
+    ['influencer_name','niche','audience','voice','core_values','pillars','bio'].forEach(k=>{ obj[k]=document.getElementById('f-'+k).value; });
+    const saved = await sbSaveBrand(obj);
+    const note = document.getElementById('brandSaveNote');
+    if(saved){ state.brand = saved; note.textContent='Saved'; } else { note.textContent='Save failed'; }
+    note.classList.add('show');
+    setTimeout(()=>note.classList.remove('show'), 1800);
+  };
+}
+
+// ---------------- generic list ----------------
+function calendarFields(){ return [ {key:'date',label:'Date',type:'date'}, {key:'platform',label:'Platform',type:'select',options:PLATFORMS}, {key:'title',label:'Title / Concept',type:'text'}, {key:'status',label:'Status',type:'select',options:CAL_STATUSES}, {key:'notes',label:'Notes',type:'textarea'} ]; }
+function swipeFields(){ return [ {key:'title',label:'Creator / Video Name',type:'text'}, {key:'platform',label:'Platform',type:'select',options:PLATFORMS}, {key:'link',label:'Link',type:'text'}, {key:'notes',label:'Why it works',type:'textarea'}, {key:'tag',label:'Tag / Category',type:'text'} ]; }
+function campaignFields(){ return [ {key:'title',label:'Campaign Name',type:'text'}, {key:'status',label:'Status',type:'select',options:CAMPAIGN_STATUSES}, {key:'timeframe',label:'Timeframe',type:'text'}, {key:'channels',label:'Channels',type:'text'}, {key:'notes',label:'Goal / Strategy Notes',type:'textarea'} ]; }
+
+let currentCfg = null;
+
+function renderList(main, cfg){
+  currentCfg = cfg;
+  const items = [...state[cfg.key]].sort((a,b)=> (b.date||'').localeCompare(a.date||'') || (b.take_number-a.take_number));
+  main.innerHTML = `
+    <div class="page-head"><h1>${cfg.title}</h1><p>${cfg.sub}</p></div>
+    <div class="toolbar"><span></span><button class="btn primary" id="addBtn">+ Add</button></div>
+    <div class="card-list" id="listWrap"></div>
+  `;
+  const wrap = document.getElementById('listWrap');
+  if(items.length===0){ wrap.innerHTML = `<div class="empty">${cfg.empty}</div>`; }
+  else { items.forEach(item=> wrap.appendChild(buildCard(item, cfg))); }
+  document.getElementById('addBtn').onclick = ()=> openModal(cfg, null);
+}
+
+function buildCard(item, cfg){
+  const div = document.createElement('div');
+  div.className='card';
+  const platformPill = item.platform ? `<span class="pill platform">${esc(item.platform)}</span>` : '';
+  const statusPill = item.status ? `<span class="pill status">${esc(item.status)}</span>` : '';
+  const dateBit = item.date ? `<span class="pill status" style="background:var(--amber-dim);color:var(--amber);">${esc(item.date)}</span>` : '';
+  const linkBit = item.link ? `<a class="link" href="${esc(item.link)}" target="_blank" rel="noopener">Open reference ↗</a>` : '';
+  div.innerHTML = `
+    <div class="card-top">
+      <div>
+        <span class="take-tag">TAKE ${item.take_number}</span>
+        <div class="card-title" style="margin-top:6px;">${esc(item.title)||'Untitled'}</div>
+      </div>
+      <div class="card-actions">
+        <button class="icon-btn" data-act="edit">Edit</button>
+        <button class="icon-btn" data-act="del">Delete</button>
+      </div>
+    </div>
+    <div class="card-meta">${dateBit}${platformPill}${statusPill}${item.tag?`<span class="pill platform">${esc(item.tag)}</span>`:''}</div>
+    ${item.notes? `<div class="card-notes">${esc(item.notes)}</div>`:''}
+    ${item.channels? `<div class="card-notes"><strong>Channels:</strong> ${esc(item.channels)}</div>`:''}
+    ${item.timeframe? `<div class="card-notes"><strong>Timeframe:</strong> ${esc(item.timeframe)}</div>`:''}
+    ${linkBit}
+  `;
+  div.querySelector('[data-act="edit"]').onclick = ()=> openModal(currentCfg, item);
+  div.querySelector('[data-act="del"]').onclick = ()=> deleteItem(currentCfg, item.id);
+  return div;
+}
+
+function openModal(cfg, item){
+  const overlay = document.getElementById('overlay');
+  const box = document.getElementById('modalBox');
+  const isEdit = !!item;
+  const data = item || {};
+  const fieldsHtml = cfg.fields.map(f=>{
+    const val = esc(data[f.key]||'');
+    if(f.type==='textarea') return `<div class="field"><label>${f.label}</label><textarea rows="3" id="m-${f.key}">${val}</textarea></div>`;
+    if(f.type==='select'){ const opts = f.options.map(o=>`<option value="${o}" ${data[f.key]===o?'selected':''}>${o}</option>`).join(''); return `<div class="field"><label>${f.label}</label><select id="m-${f.key}">${opts}</select></div>`; }
+    return `<div class="field"><label>${f.label}</label><input type="${f.type}" id="m-${f.key}" value="${val}"></div>`;
+  }).join('');
+  box.innerHTML = `
+    <h2>${isEdit? 'Edit' : 'Add'} — ${cfg.title}</h2>
+    ${fieldsHtml}
+    <div class="modal-actions">
+      <button class="btn ghost" id="mCancel">Cancel</button>
+      <button class="btn primary" id="mSave">${isEdit?'Save':'Add'}</button>
+    </div>
+  `;
+  overlay.classList.add('show');
+  document.getElementById('mCancel').onclick = closeModal;
+  document.getElementById('mSave').onclick = async ()=>{
+    const obj = {};
+    cfg.fields.forEach(f=> obj[f.key] = document.getElementById('m-'+f.key).value);
+    if(isEdit){
+      const saved = await sbUpdate(cfg.table, item.id, obj);
+      if(saved){ const idx = state[cfg.key].findIndex(x=>x.id===item.id); state[cfg.key][idx]=saved; }
+    } else {
+      obj.take_number = nextTake();
+      const saved = await sbInsert(cfg.table, obj);
+      if(saved){ state[cfg.key].push(saved); }
+    }
+    closeModal();
+    render(cfg.key);
+  };
+}
+function closeModal(){ document.getElementById('overlay').classList.remove('show'); }
+document.getElementById('overlay').addEventListener('click', (e)=>{ if(e.target.id==='overlay') closeModal(); });
+
+async function deleteItem(cfg, id){
+  const ok = await sbDelete(cfg.table, id);
+  if(ok){ state[cfg.key] = state[cfg.key].filter(x=>x.id!==id); render(cfg.key); }
+}
+
+// ---------------- Idea Bank (kanban) ----------------
+function ideaModalFields(){ return [ {key:'title',label:'Video Idea',type:'text'}, {key:'platform',label:'Platform',type:'select',options:PLATFORMS}, {key:'notes',label:'Hook / Notes',type:'textarea'}, {key:'stage',label:'Stage',type:'select',options:IDEA_STAGES} ]; }
+
+function renderKanban(main){
+  main.innerHTML = `<div class="page-head"><h1>Idea Bank</h1><p>Every video idea, moving left to right as it develops.</p></div><div class="kanban" id="kanbanWrap"></div>`;
+  const wrap = document.getElementById('kanbanWrap');
+  IDEA_STAGES.forEach(stage=>{
+    const col = document.createElement('div');
+    col.className='kcol';
+    const items = state.ideas.filter(i=> (i.stage||'Idea')===stage);
+    col.innerHTML = `<h3>${stage} <span>${items.length}</span></h3>`;
+    items.forEach(item=>{
+      const c = document.createElement('div');
+      c.className='kcard';
+      c.innerHTML = `
+        <span class="take-tag">TAKE ${item.take_number}</span>
+        <div class="card-title" style="margin-top:6px;">${esc(item.title)||'Untitled'}</div>
+        <div class="card-meta" style="margin-top:4px;">${item.platform?`<span class="pill platform">${esc(item.platform)}</span>`:''}</div>
+        ${item.notes?`<div class="card-notes">${esc(item.notes)}</div>`:''}
+        <div class="card-actions" style="margin-top:8px;">
+          <button class="icon-btn" data-act="edit">Edit</button>
+          <button class="icon-btn" data-act="del">Delete</button>
+        </div>
+      `;
+      c.querySelector('[data-act="edit"]').onclick = ()=> openIdeaModal(item);
+      c.querySelector('[data-act="del"]').onclick = async ()=>{
+        const ok = await sbDelete('idea_bank', item.id);
+        if(ok){ state.ideas = state.ideas.filter(x=>x.id!==item.id); renderKanban(main); }
+      };
+      col.appendChild(c);
+    });
+    const addBtn = document.createElement('button');
+    addBtn.className='kadd'; addBtn.textContent='+ Add idea';
+    addBtn.onclick = ()=> openIdeaModal(null, stage);
+    col.appendChild(addBtn);
+    wrap.appendChild(col);
+  });
+}
+
+function openIdeaModal(item, defaultStage){
+  const overlay = document.getElementById('overlay');
+  const box = document.getElementById('modalBox');
+  const isEdit = !!item;
+  const data = item || {stage: defaultStage||'Idea'};
+  const fields = ideaModalFields();
+  const fieldsHtml = fields.map(f=>{
+    const val = esc(data[f.key]||'');
+    if(f.type==='textarea') return `<div class="field"><label>${f.label}</label><textarea rows="3" id="i-${f.key}">${val}</textarea></div>`;
+    if(f.type==='select'){ const opts = f.options.map(o=>`<option value="${o}" ${data[f.key]===o?'selected':''}>${o}</option>`).join(''); return `<div class="field"><label>${f.label}</label><select id="i-${f.key}">${opts}</select></div>`; }
+    return `<div class="field"><label>${f.label}</label><input id="i-${f.key}" value="${val}"></div>`;
+  }).join('');
+  box.innerHTML = `
+    <h2>${isEdit?'Edit':'Add'} Idea</h2>
+    ${fieldsHtml}
+    <div class="modal-actions">
+      <button class="btn ghost" id="iCancel">Cancel</button>
+      <button class="btn primary" id="iSave">${isEdit?'Save':'Add'}</button>
+    </div>
+  `;
+  overlay.classList.add('show');
+  document.getElementById('iCancel').onclick = closeModal;
+  document.getElementById('iSave').onclick = async ()=>{
+    const obj = {};
+    fields.forEach(f=> obj[f.key] = document.getElementById('i-'+f.key).value);
+    if(isEdit){
+      const saved = await sbUpdate('idea_bank', item.id, obj);
+      if(saved){ const idx = state.ideas.findIndex(x=>x.id===item.id); state.ideas[idx]=saved; }
+    } else {
+      obj.take_number = nextTake();
+      const saved = await sbInsert('idea_bank', obj);
+      if(saved){ state.ideas.push(saved); }
+    }
+    closeModal();
+    renderKanban(document.getElementById('main'));
+  };
+}
+
+// ---------------- init ----------------
+(async function init(){
+  const dot = document.getElementById('connDot');
+  const label = document.getElementById('connLabel');
+  if(!configured){
+    label.textContent = 'Not connected — add your Supabase keys';
+    render('brand');
+    return;
+  }
+  try{
+    await loadAll();
+    dot.classList.add('ok');
+    label.textContent = 'Connected to Supabase';
+    render('brand');
+  }catch(e){
+    console.error(e);
+    label.textContent = 'Connection failed — check console';
+  }
+})();
+</script>
+</body>
+</html>
