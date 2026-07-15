@@ -301,7 +301,7 @@ const configured = !SUPABASE_URL.includes('YOUR_') && !SUPABASE_ANON_KEY.include
 const supabase   = configured ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 // ── Constants ──────────────────────────────────────────
-const PLATFORMS        = ["TikTok","Instagram Reels","YouTube Shorts","YouTube Long-form","X / Twitter","Other"];
+const PLATFORMS        = ["TikTok","Instagram Reels","YouTube","X / Twitter","Reddit","Twitch","Other"];
 const CAL_STATUSES     = ["Idea","Scripted","Filming","Editing","Scheduled","Posted"];
 const IDEA_STAGES      = ["Idea","Filmed","Posted"];
 const CAMPAIGN_STATUSES= ["Planning","Active","Complete"];
@@ -820,7 +820,7 @@ async function deleteItem(cfg, id) {
 }
 
 // ── Idea Bank (kanban) ─────────────────────────────────
-function ideaModalFields() { return [{key:'title',label:'Video Idea',type:'text'},{key:'platform',label:'Platform',type:'select',options:PLATFORMS},{key:'notes',label:'Hook / Notes',type:'textarea'},{key:'stage',label:'Stage',type:'select',options:IDEA_STAGES}]; }
+function ideaModalFields() { return [{key:'title',label:'Video Idea',type:'text'},{key:'platform',label:'Platform',type:'select',options:PLATFORMS},{key:'link',label:'Link',type:'text'},{key:'notes',label:'Hook / Notes',type:'textarea'},{key:'stage',label:'Stage',type:'select',options:IDEA_STAGES}]; }
 
 function renderKanban(main) {
   const items = filteredItems('ideas');
@@ -845,6 +845,7 @@ function renderKanban(main) {
         <div class="card-title" style="margin-top:${inf ? '6px' : '0'};">${esc(item.title)||'Untitled'}</div>
         <div class="card-meta" style="margin-top:4px;">${item.platform?`<span class="pill platform">${esc(item.platform)}</span>`:''}</div>
         ${item.notes ? `<div class="card-notes">${esc(item.notes)}</div>` : ''}
+        ${item.link  ? `<a class="link" href="${esc(item.link)}" target="_blank" rel="noopener" style="display:inline-block;margin-top:4px;">Open reference ↗</a>` : ''}
         <div class="card-actions" style="margin-top:8px;">
           <button class="icon-btn" data-act="edit">Edit</button>
           <button class="icon-btn" data-act="del">Delete</button>
